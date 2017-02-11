@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# INSTRUCTIONS
+# Place the http-test-loop script on your desktop
+# Edit it to set the URL you'd like to test
+# Change working directory to your Desktop ($ cd ~/Desktop)
+# Mod executable ($ chmod +x ./http-test-loop}
+# Run it! ($ ./https-ps-test)
+#
+# The script will begin logging successes/failures to the log file until you tell it to stop (Ctrl-C). The log file will be placed in the user's home directory.
+
+# Set this to the URL you'd like to test
+TARGET="https://www.google.com/"
+
+LOGFILE="$HOME/http-test-loop.log"
+printf "Logging to $LOGFILE ... \nType Control + C to stop ... \n"
+
+while [ : ]
+do
+	STARTSEC=$SECONDS
+	STARTDATE="$(date +%Y-%m-%d:%H:%M:%S)"
+
+	curl --max-time 10 -I -s -o /dev/null "$TARGET"
+	if [ $? != 0 ]; then
+		RESULT="$STARTDATE TIMEOUT after 10 seconds"
+	else
+		RESULT="$STARTDATE fine"
+	fi
+
+	# guarantee a consistent 10 sec pacing
+	ELAPSED=$(( SECONDS - STARTSEC ))
+	REMAINDER=$(( 10 - ELAPSED ))
+
+	# in case of weird rounding edge cases?
+	# i never encountered any, but safe > sorry
+	if [ "$REMAINDER" -lt 0 ]; then
+		REMAINDER=0
+	elif [ "$REMAINDER" -gt 10 ]; then
+		REMAINDER=10
+	fi
+
+	SLEEPCMD="sleep $REMAINDER"
+	eval $SLEEPCMD
+
+	# log after sleeping, so that logging is paced too
+	echo "$RESULT" >> $LOGFILE
+done
