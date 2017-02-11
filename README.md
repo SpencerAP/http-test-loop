@@ -4,7 +4,7 @@ Experiencing an itermittent connectivity or routing issue? Curious about the fre
 
 Should work for both macOS & Linux.
 
-# CLI (Terminal) Instructions
+## CLI (Terminal) Instructions
 
 1. Place the http-test-loop script on your desktop
 2. Edit it to set the URL you'd like to test
